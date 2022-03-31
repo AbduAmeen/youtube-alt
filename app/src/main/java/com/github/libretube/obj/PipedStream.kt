@@ -19,6 +19,7 @@ data class PipedStream(
     var height: Int?,
     var fps: Int?
 ) {
+    constructor() : this("", "", "", "", "", null, -1, -1, -1, -1, -1, -1, -1, -1)
 //    override fun equals(other: Any?): Boolean {
 //        if (this === other) return true
 //        if (javaClass != other?.javaClass) return false

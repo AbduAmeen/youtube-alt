@@ -104,7 +104,7 @@ class PlayerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         hideKeyboard()
         lifecycleScope.launch {
-            val response = initializeData()
+            val response = initializeData().await()
 
             initializeExoPlayer(mediaSource)
             initializePlayerElements(response)
@@ -277,10 +277,10 @@ class PlayerFragment : Fragment() {
             )
         }
         return@async response
-    }.await()
+    }
 
     private fun initializePlayerElements(response: Streams?) {
-        view?.findViewById<TextView>(R.id.quality_text)?.text = "hls"
+        view?.findViewById<TextView>(R.id.quality_text)?.text = "Auto"
         view?.findViewById<TextView>(R.id.title_textView)?.text = response?.title
         view?.findViewById<ImageButton>(R.id.quality_select)?.setOnClickListener {
             // Dialog for quality selection
@@ -411,10 +411,10 @@ class PlayerFragment : Fragment() {
             RetrofitInstance.api.getStreams(videoId!!)
         } catch (e: IOException) {
             println(e)
-            Log.e(logTag, "IOException, you might not have internet connection")
+            Log.e(logTag, "IOException, you might not have internet connection", e)
             null
         } catch (e: HttpException) {
-            Log.e(logTag, "HttpException, unexpected response")
+            Log.e(logTag, "HttpException, unexpected response", e)
             null
         }
     }
