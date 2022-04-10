@@ -190,9 +190,9 @@ class ChannelFragment : Fragment() {
                 runOnUiThread {
                     view.findViewById<TextView>(R.id.channel_name).text = response.name
                     view.findViewById<TextView>(R.id.channel_subs).text = response.subscriberCount.formatShort() + " subscribers"
-                    view.findViewById<TextView>(R.id.channel_description).text = response.description
+                    view.findViewById<TextView>(R.id.video_list_row_description).text = response.description
                     val bannerImage = view.findViewById<ImageView>(R.id.channel_banner)
-                    val channelImage = view.findViewById<ImageView>(R.id.channel_image)
+                    val channelImage = view.findViewById<ImageView>(R.id.list_item_video_channel_img)
                     Picasso.get().load(response.bannerUrl).into(bannerImage)
                     Picasso.get().load(response.avatarUrl).into(channelImage)
                     channelAdapter = ChannelAdapter(response.relatedStreams!!.toMutableList())

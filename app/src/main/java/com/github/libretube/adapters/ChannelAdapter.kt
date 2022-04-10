@@ -26,16 +26,16 @@ class ChannelAdapter(private val videoFeed: MutableList<StreamItem>) : RecyclerV
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChannelViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val cell = layoutInflater.inflate(R.layout.video_channel_row, parent, false)
+        val cell = layoutInflater.inflate(R.layout.playlist_item_video, parent, false)
         return ChannelViewHolder(cell)
     }
 
     override fun onBindViewHolder(holder: ChannelViewHolder, position: Int) {
         val trending = videoFeed[position]
-        holder.v.findViewById<TextView>(R.id.channel_description).text = trending.title
-        holder.v.findViewById<TextView>(R.id.channel_views).text = trending.views.formatShort() + " • " + DateUtils.getRelativeTimeSpanString(trending.uploaded!!)
-        holder.v.findViewById<TextView>(R.id.channel_duration).text = DateUtils.formatElapsedTime(trending.duration!!)
-        val thumbnailImage = holder.v.findViewById<ImageView>(R.id.channel_thumbnail)
+        holder.v.findViewById<TextView>(R.id.video_list_row_description).text = trending.title
+        holder.v.findViewById<TextView>(R.id.video_list_row_views).text = trending.views.formatShort() + " • " + DateUtils.getRelativeTimeSpanString(trending.uploaded!!)
+        holder.v.findViewById<TextView>(R.id.video_list_row_duration).text = DateUtils.formatElapsedTime(trending.duration!!)
+        val thumbnailImage = holder.v.findViewById<ImageView>(R.id.video_list_row_thumbnail)
         Picasso.get().load(trending.thumbnail).into(thumbnailImage)
         holder.v.setOnClickListener {
             var bundle = Bundle()

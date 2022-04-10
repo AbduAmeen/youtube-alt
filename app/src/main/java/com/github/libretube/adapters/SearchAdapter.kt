@@ -16,24 +16,24 @@ import com.github.libretube.fragments.PlayerFragment
 import com.github.libretube.obj.SearchItem
 import com.squareup.picasso.Picasso
 
-class SearchAdapter(private val searchItems: List<SearchItem>) : RecyclerView.Adapter<CustomViewHolder1>() {
+class SearchAdapter(private val searchItems: List<SearchItem>) : RecyclerView.Adapter<ListViewHolder>() {
     override fun getItemCount(): Int {
         return searchItems.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder1 {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         val layout = when (viewType) {
-            0 -> R.layout.video_search_row
+            0 -> R.layout.list_item_video
             1 -> R.layout.channel_search_row
             2 -> R.layout.playlist_search_row
             else -> throw IllegalArgumentException("Invalid type")
         }
         val layoutInflater = LayoutInflater.from(parent.context)
         val cell = layoutInflater.inflate(layout, parent, false)
-        return CustomViewHolder1(cell)
+        return ListViewHolder(cell)
     }
 
-    override fun onBindViewHolder(holder: CustomViewHolder1, position: Int) {
+    override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         holder.bind(searchItems[position])
     }
 
@@ -46,25 +46,27 @@ class SearchAdapter(private val searchItems: List<SearchItem>) : RecyclerView.Ad
         }
     }
 }
-class CustomViewHolder1(private val v: View) : RecyclerView.ViewHolder(v) {
+class ListViewHolder(private val v: View) : RecyclerView.ViewHolder(v) {
 
-    private fun bindWatch(item: SearchItem) {
-        val thumbnailImage = v.findViewById<ImageView>(R.id.search_thumbnail)
-        Picasso.get().load(item.thumbnail).into(thumbnailImage)
-        val channelImage = v.findViewById<ImageView>(R.id.search_channel_image)
+    private fun populateVideoItem(item: SearchItem) {
+        val thumbnailImage = v.findViewById<ImageView>(R.id.list_item_video_thumbnail)
+        val channelImage = v.findViewById<ImageView>(R.id.list_item_video_channel_img)
+        val title = v.findViewById<TextView>(R.id.list_item_video_title)
+        val uploadInfo = v.findViewById<TextView>(R.id.list_item_video_upload_info)
+
         Picasso.get().load(item.uploaderAvatar).into(channelImage)
-        val title = v.findViewById<TextView>(R.id.search_description)
+        Picasso.get().load(item.thumbnail).into(thumbnailImage)
+
         title.text = item.title
-        val views = v.findViewById<TextView>(R.id.search_views)
-        views.text = item.views.formatShort() + " • " + item.uploadedDate
-        val channelName = v.findViewById<TextView>(R.id.search_channel_name)
-        channelName.text = item.uploaderName
+        uploadInfo.text = "${item.uploaderName} • ${item.views.formatShort()} views • ${item.uploadedDate}"
+
         v.setOnClickListener {
             var bundle = Bundle()
-            bundle.putString("videoId", item.url!!.replace("/watch?v=", ""))
             var frag = PlayerFragment()
-            frag.arguments = bundle
             val activity = v.context as AppCompatActivity
+
+            bundle.putString("videoId", item.url!!.replace("/watch?v=", ""))
+            frag.arguments = bundle
             activity.supportFragmentManager.beginTransaction()
                 .remove(PlayerFragment())
                 .commit()
@@ -78,7 +80,8 @@ class CustomViewHolder1(private val v: View) : RecyclerView.ViewHolder(v) {
             activity.navController.navigate(R.id.channel, bundle)
         }
     }
-    private fun bindChannel(item: SearchItem) {
+
+    private fun populateChannelItem(item: SearchItem) {
         val channelImage = v.findViewById<ImageView>(R.id.search_channel_image)
         Picasso.get().load(item.thumbnail).into(channelImage)
         val channelName = v.findViewById<TextView>(R.id.search_channel_name)
@@ -92,7 +95,8 @@ class CustomViewHolder1(private val v: View) : RecyclerView.ViewHolder(v) {
         }
         // todo sub button
     }
-    private fun bindPlaylist(item: SearchItem) {
+
+    private fun populatePlaylistItem(item: SearchItem) {
         val playlistImage = v.findViewById<ImageView>(R.id.search_thumbnail)
         Picasso.get().load(item.thumbnail).into(playlistImage)
         val playlistNumber = v.findViewById<TextView>(R.id.search_playlist_number)
@@ -113,9 +117,9 @@ class CustomViewHolder1(private val v: View) : RecyclerView.ViewHolder(v) {
 
     fun bind(searchItem: SearchItem) {
         when {
-            searchItem.url!!.startsWith("/watch", false) -> bindWatch(searchItem)
-            searchItem.url!!.startsWith("/channel", false) -> bindChannel(searchItem)
-            searchItem.url!!.startsWith("/playlist", false) -> bindPlaylist(searchItem)
+            searchItem.url!!.startsWith("/watch", false) -> populateVideoItem(searchItem)
+            searchItem.url!!.startsWith("/channel", false) -> populateChannelItem(searchItem)
+            searchItem.url!!.startsWith("/playlist", false) -> populatePlaylistItem(searchItem)
             else -> {
             }
         }

@@ -25,17 +25,17 @@ class TrendingAdapter(private val videoFeed: List<StreamItem>) : RecyclerView.Ad
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val cell = layoutInflater.inflate(R.layout.trending_row, parent, false)
+        val cell = layoutInflater.inflate(R.layout.list_item_video, parent, false)
         return CustomViewHolder(cell)
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         val trending = videoFeed[position]
-        holder.v.findViewById<TextView>(R.id.textView_title).text = trending.title
-        holder.v.findViewById<TextView>(R.id.textView_channel).text = trending.uploaderName + " • " + trending.views.formatShort() + " • " + DateUtils.getRelativeTimeSpanString(trending.uploaded!!)
-        val thumbnailImage = holder.v.findViewById<ImageView>(R.id.thumbnail)
-        holder.v.findViewById<TextView>(R.id.thumbnail_duration).text = DateUtils.formatElapsedTime(trending.duration!!)
-        val channelImage = holder.v.findViewById<ImageView>(R.id.channel_image)
+        holder.v.findViewById<TextView>(R.id.list_item_video_title).text = trending.title
+        holder.v.findViewById<TextView>(R.id.list_item_video_upload_info).text = trending.uploaderName + " • " + trending.views.formatShort() + " • " + DateUtils.getRelativeTimeSpanString(trending.uploaded!!)
+        val thumbnailImage = holder.v.findViewById<ImageView>(R.id.list_item_video_thumbnail)
+        holder.v.findViewById<TextView>(R.id.list_item_video_duration).text = DateUtils.formatElapsedTime(trending.duration!!)
+        val channelImage = holder.v.findViewById<ImageView>(R.id.list_item_video_channel_img)
         channelImage.setOnClickListener {
             val activity = holder.v.context as MainActivity
             val bundle = bundleOf("channel_id" to trending.uploaderUrl)

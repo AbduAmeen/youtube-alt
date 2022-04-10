@@ -69,6 +69,24 @@
             motion:layout_constraintBottom_toBottomOf="@id/main_container"
             motion:layout_constraintTop_toTopOf="@id/main_container"
             motion:layout_constraintStart_toStartOf="@id/main_container" />
+        <Constraint
+            android:id="@+id/player_main_container"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            motion:layout_constraintHeight_percent="0.35"
+            motion:layout_constraintHorizontal_bias="0.5"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent" />
+        <Constraint
+            android:id="@+id/player_main_container"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            motion:layout_constraintHeight_percent="0.35"
+            motion:layout_constraintHorizontal_bias="0.5"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent" />
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end">
