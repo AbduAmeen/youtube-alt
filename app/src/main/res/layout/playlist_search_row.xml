@@ -32,34 +32,39 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
-        <RelativeLayout
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/relativeLayout"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_gravity="right"
-            android:background="#CC000000"
-            >
+            android:background="#CC000000">
 
-            <TextView
-                android:id="@+id/search_playlist_number"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="10"
-                android:textColor="#ECE4E4"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
-                />
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_playlist"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:layout_below="@+id/search_playlist_number"
-                />
+                <TextView
+                    android:id="@+id/search_playlist_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="10"
+                    android:textAlignment="center"
+                    android:textColor="#ECE4E4" />
 
-        </RelativeLayout>
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_playlist" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <TextView

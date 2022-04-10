@@ -281,7 +281,7 @@ class PlayerFragment : Fragment() {
 
     private fun initializePlayerElements(response: Streams?) {
         view?.findViewById<TextView>(R.id.quality_text)?.text = "Auto"
-        view?.findViewById<TextView>(R.id.title_textView)?.text = response?.title
+        view?.findViewById<TextView>(R.id.player_title)?.text = response?.title
         view?.findViewById<ImageButton>(R.id.quality_select)?.setOnClickListener {
             // Dialog for quality selection
             val builder: AlertDialog.Builder? = activity?.let {
@@ -333,7 +333,7 @@ class PlayerFragment : Fragment() {
             } else {
                 Html.fromHtml(response?.description)
             }
-        view?.findViewById<TextView>(R.id.player_sub)?.text =
+        view?.findViewById<TextView>(R.id.player_views_info)?.text =
             "${response?.views.formatShort()} views • ${response?.uploadDate}"
         view?.findViewById<TextView>(R.id.textLike)?.text = response?.likes.formatShort()
 

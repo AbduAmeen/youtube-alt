@@ -44,7 +44,7 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val recyclerView = view.findViewById<RecyclerView>(R.id.search_recycler)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.fragment_search_list)
         recyclerView.layoutManager = GridLayoutManager(view.context, 1)
         val autoTextView = view.findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
         autoTextView.requestFocus()

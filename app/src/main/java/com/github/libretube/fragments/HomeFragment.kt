@@ -41,7 +41,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recview)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.fragment_home_list)
         recyclerView.layoutManager = GridLayoutManager(view.context, resources.getInteger(R.integer.grid_items))
         val progressbar = view.findViewById<ProgressBar>(R.id.progressBar)
         fetchJson(progressbar, recyclerView)
@@ -86,7 +86,7 @@ class HomeFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        view?.findViewById<RecyclerView>(R.id.recview)?.adapter = null
+        view?.findViewById<RecyclerView>(R.id.fragment_home_list)?.adapter = null
         refreshLayout = null
         Log.e(TAG, "destroyview")
         super.onDestroyView()
