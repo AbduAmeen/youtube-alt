@@ -342,7 +342,7 @@ class PlayerFragment : Fragment() {
 
         Picasso.get().load(response.uploaderAvatar).into(channelImage)
         view?.findViewById<TextView>(R.id.player_channelName)?.text = response.uploader
-        view?.findViewById<RelativeLayout>(R.id.player_channel)?.setOnClickListener {
+        view?.findViewById<ConstraintLayout>(R.id.player_channel)?.setOnClickListener {
 
             val activity = view?.context as MainActivity
             val bundle = bundleOf("channel_id" to response.uploaderUrl)
