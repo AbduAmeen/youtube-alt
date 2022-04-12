@@ -1,28 +1,23 @@
 package com.github.libretube.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.libretube.R
-import com.github.libretube.RetrofitInstance
 import com.github.libretube.adapters.TrendingAdapter
-import retrofit2.HttpException
-import java.io.IOException
+import com.github.libretube.network.PipedApiClient
 
 class HomeFragment : Fragment() {
-
-    private val TAG = "HomeFragment"
+    private lateinit var apiClient: PipedApiClient
     private var refreshLayout: SwipeRefreshLayout? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -34,61 +29,42 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        apiClient = PipedApiClient.initialize(requireContext(), HomeFragment::class.toString())
         val recyclerView = view.findViewById<RecyclerView>(R.id.fragment_home_list)
-        recyclerView.layoutManager = GridLayoutManager(view.context, resources.getInteger(R.integer.grid_items))
+
         val progressbar = view.findViewById<ProgressBar>(R.id.progressBar)
-        fetchJson(progressbar, recyclerView)
+
+        recyclerView.layoutManager = GridLayoutManager(view.context, resources.getInteger(R.integer.grid_items))
+        fetchTrending(progressbar, recyclerView)
+
         refreshLayout = view.findViewById(R.id.home_refresh)
         refreshLayout?.isEnabled = true
         refreshLayout?.setOnRefreshListener {
-            Log.d(TAG, "hmm")
-            fetchJson(progressbar, recyclerView)
+            fetchTrending(progressbar, recyclerView)
         }
     }
 
-    private fun fetchJson(progressBar: ProgressBar, recyclerView: RecyclerView) {
-        fun run() {
-            lifecycleScope.launchWhenCreated {
-                val response = try {
-                    val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-                    RetrofitInstance.api.getTrending(sharedPreferences.getString("region", "US")!!)
-                } catch (e: IOException) {
-                    println(e)
-                    Log.e(TAG, "IOException, you might not have internet connection")
-                    Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_SHORT).show()
-                    return@launchWhenCreated
-                } catch (e: HttpException) {
-                    Log.e(TAG, "HttpException, unexpected response")
-                    Toast.makeText(context, R.string.server_error, Toast.LENGTH_SHORT).show()
-                    return@launchWhenCreated
-                } finally {
-                    refreshLayout?.isRefreshing = false
-                }
-                runOnUiThread {
-                    progressBar.visibility = View.GONE
-                    recyclerView.adapter = TrendingAdapter(response)
-                }
+    private fun fetchTrending(progressBar: ProgressBar, recyclerView: RecyclerView) {
+        lifecycleScope.launchWhenCreated {
+            val response = apiClient.fetchTrending()
+            refreshLayout?.isRefreshing = false
+            progressBar.visibility = View.GONE
+
+            if (response != null) {
+                recyclerView.adapter = TrendingAdapter(response)
             }
         }
-        run()
-    }
-    private fun Fragment?.runOnUiThread(action: () -> Unit) {
-        this ?: return
-        if (!isAdded) return // Fragment not attached to an Activity
-        activity?.runOnUiThread(action)
     }
 
     override fun onDestroyView() {
         view?.findViewById<RecyclerView>(R.id.fragment_home_list)?.adapter = null
         refreshLayout = null
-        Log.e(TAG, "destroyview")
         super.onDestroyView()
     }
 }

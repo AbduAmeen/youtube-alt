@@ -1,4 +1,4 @@
-package com.github.libretube
+package com.github.libretube.network
 
 import com.github.libretube.obj.Channel
 import com.github.libretube.obj.Instances

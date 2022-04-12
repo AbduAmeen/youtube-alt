@@ -23,7 +23,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.github.libretube.R
-import com.github.libretube.RetrofitInstance
+import com.github.libretube.network.RetrofitInstance
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.color.DynamicColors
 import java.lang.Exception
@@ -52,17 +52,14 @@ class MainActivity : AppCompatActivity() {
                 R.id.home2 -> {
                     navController.backQueue.clear()
                     navController.navigate(R.id.home2)
-                    true
                 }
                 R.id.subscriptions -> {
                     // navController.backQueue.clear()
                     navController.navigate(R.id.subscriptions)
-                    true
                 }
                 R.id.library -> {
                     // navController.backQueue.clear()
                     navController.navigate(R.id.library)
-                    true
                 }
             }
             false
@@ -79,14 +76,12 @@ class MainActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener {
             // settings fragment stuff
             navController.navigate(R.id.settings)
-            true
         }
 
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.action_search -> {
                     navController.navigate(R.id.searchFragment)
-                    true
                 }
             }
             false

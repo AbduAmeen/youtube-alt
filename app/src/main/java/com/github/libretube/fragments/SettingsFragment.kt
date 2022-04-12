@@ -22,7 +22,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.blankj.utilcode.util.UriUtils
 import com.github.libretube.R
-import com.github.libretube.RetrofitInstance
+import com.github.libretube.network.RetrofitInstance
 import com.github.libretube.obj.Subscribe
 import retrofit2.HttpException
 import java.io.ByteArrayOutputStream
@@ -138,7 +138,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
-        val themeToggle = findPreference<ListPreference>("theme_togglee")
+        val themeToggle = findPreference<ListPreference>("theme_toggle")
         themeToggle?.setOnPreferenceChangeListener { _, newValue ->
             when (newValue.toString()) {
                 "A" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)

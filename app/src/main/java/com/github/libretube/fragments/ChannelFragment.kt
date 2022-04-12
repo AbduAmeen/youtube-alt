@@ -1,45 +1,40 @@
 package com.github.libretube.fragments
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.ScrollView
 import android.widget.TextView
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.libretube.R
-import com.github.libretube.RetrofitInstance
+import com.github.libretube.R.id.channel_scrollView
 import com.github.libretube.adapters.ChannelAdapter
 import com.github.libretube.formatShort
-import com.github.libretube.obj.Subscribe
+import com.github.libretube.network.PipedApiClient
 import com.google.android.material.button.MaterialButton
 import com.squareup.picasso.Picasso
-import retrofit2.HttpException
-import java.io.IOException
 
 class ChannelFragment : Fragment() {
 
-    private var channel_id: String? = null
-    private val TAG = "ChannelFragment"
-    var nextPage: String? = null
-    var channelAdapter: ChannelAdapter? = null
-    var isLoading = true
-    var isSubscribed: Boolean = false
+    private lateinit var channelId: String
+    private var nextPage: String? = null
+    private var channelAdapter: ChannelAdapter? = null
+    private var isLoading = true
+    private var isSubscribed: Boolean = false
+    private lateinit var apiClient: PipedApiClient
+    private val sharedPref = context?.getSharedPreferences("token", Context.MODE_PRIVATE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            channel_id = it.getString("channel_id")
-        }
+        channelId = arguments?.getString("channel_id")!!
     }
 
     override fun onCreateView(
@@ -53,184 +48,95 @@ class ChannelFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        channel_id = channel_id!!.replace("/channel/", "")
-        view.findViewById<TextView>(R.id.channel_name).text = channel_id
+        apiClient = PipedApiClient.initialize(requireContext(), ChannelFragment::class.toString())
         val recyclerView = view.findViewById<RecyclerView>(R.id.channel_recView)
+        val scrollView = view.findViewById<NestedScrollView>(channel_scrollView)
+
+        channelId = channelId.replace("/channel/", "")
+        view.findViewById<TextView>(R.id.channel_name).text = channelId
         recyclerView.layoutManager = LinearLayoutManager(context)
         fetchChannel(view)
-        val sharedPref = context?.getSharedPreferences("token", Context.MODE_PRIVATE)
+
         if (sharedPref?.getString("token", "") != "") {
             val subButton = view.findViewById<MaterialButton>(R.id.channel_subscribe)
             isSubscribed(subButton)
         }
-        val scrollView = view.findViewById<ScrollView>(R.id.channel_scrollView)
+
         scrollView.viewTreeObserver
             .addOnScrollChangedListener {
-                if (scrollView.getChildAt(0).bottom
-                    == (scrollView.height + scrollView.scrollY)
+                val scrollPercent = scrollView.scrollY / (scrollView.getChildAt(0).bottom.toDouble() - scrollView.height) * 100f
+                // scroll view is at bottom
+                if (scrollPercent > 70 && nextPage != null && !isLoading
                 ) {
-                    // scroll view is at bottom
-                    if (nextPage != null && !isLoading) {
-                        isLoading = true
-                        fetchNextPage()
-                    }
+                    isLoading = true
+                    fetchNextPage()
                 }
             }
     }
 
     private fun isSubscribed(button: MaterialButton) {
-        @SuppressLint("ResourceAsColor")
-        fun run() {
-            lifecycleScope.launchWhenCreated {
-                val response = try {
-                    val sharedPref = context?.getSharedPreferences("token", Context.MODE_PRIVATE)
-                    RetrofitInstance.api.isSubscribed(channel_id!!, sharedPref?.getString("token", "")!!)
-                } catch (e: IOException) {
-                    println(e)
-                    Log.e(TAG, "IOException, you might not have internet connection")
-                    return@launchWhenCreated
-                } catch (e: HttpException) {
-                    Log.e(TAG, "HttpException, unexpected response")
-                    return@launchWhenCreated
-                }
-                val colorPrimary = TypedValue()
-                (context as Activity).theme.resolveAttribute(
-                    android.R.attr.colorPrimary,
-                    colorPrimary,
-                    true
-                )
+        lifecycleScope.launchWhenCreated {
+            isSubscribed = apiClient.isSubscribed(channelId) ?: false
+            val colorPrimary = TypedValue()
+            val colorText = TypedValue()
 
-                val ColorText = TypedValue()
-                (context as Activity).theme.resolveAttribute(
-                    R.attr.colorOnSurface,
-                    ColorText,
-                    true
-                )
+            with((context as Activity).theme) {
+                resolveAttribute(R.attr.colorPrimary, colorPrimary, true)
+                resolveAttribute(R.attr.colorOnSurface, colorText, true)
+            }
 
-                runOnUiThread {
-                    if (response.subscribed == true) {
-                        isSubscribed = true
+            if (isSubscribed) {
+                button.text = getString(R.string.unsubscribe)
+                button.setTextColor(colorText.data)
+            }
+
+            button.setOnClickListener {
+                lifecycleScope.launchWhenCreated {
+                    if (isSubscribed) {
+                        apiClient.unsubscribe(channelId)
+                        button.text = getString(R.string.subscribe)
+                        button.setTextColor(colorPrimary.data)
+                    } else {
+                        apiClient.subscribe(channelId)
                         button.text = getString(R.string.unsubscribe)
-                        button.setTextColor(ColorText.data)
-                    }
-                    if (response.subscribed != null) {
-                        button.setOnClickListener {
-                            if (isSubscribed) {
-                                unsubscribe()
-                                button.text = getString(R.string.subscribe)
-                                button.setTextColor(colorPrimary.data)
-                            } else {
-                                subscribe()
-                                button.text = getString(R.string.unsubscribe)
-                                button.setTextColor(ColorText.data)
-                            }
-                        }
+                        button.setTextColor(colorText.data)
                     }
                 }
             }
         }
-        run()
-    }
-
-    private fun subscribe() {
-        fun run() {
-            lifecycleScope.launchWhenCreated {
-                val response = try {
-                    val sharedPref = context?.getSharedPreferences("token", Context.MODE_PRIVATE)
-                    RetrofitInstance.api.subscribe(sharedPref?.getString("token", "")!!, Subscribe(channel_id))
-                } catch (e: IOException) {
-                    println(e)
-                    Log.e(TAG, "IOException, you might not have internet connection")
-                    return@launchWhenCreated
-                } catch (e: HttpException) {
-                    Log.e(TAG, "HttpException, unexpected response$e")
-                    return@launchWhenCreated
-                }
-                isSubscribed = true
-            }
-        }
-        run()
-    }
-    private fun unsubscribe() {
-        fun run() {
-            lifecycleScope.launchWhenCreated {
-                val response = try {
-                    val sharedPref = context?.getSharedPreferences("token", Context.MODE_PRIVATE)
-                    RetrofitInstance.api.unsubscribe(sharedPref?.getString("token", "")!!, Subscribe(channel_id))
-                } catch (e: IOException) {
-                    println(e)
-                    Log.e(TAG, "IOException, you might not have internet connection")
-                    return@launchWhenCreated
-                } catch (e: HttpException) {
-                    Log.e(TAG, "HttpException, unexpected response")
-                    return@launchWhenCreated
-                }
-                isSubscribed = false
-            }
-        }
-        run()
     }
 
     private fun fetchChannel(view: View) {
-        fun run() {
-            lifecycleScope.launchWhenCreated {
-                val response = try {
-                    RetrofitInstance.api.getChannel(channel_id!!)
-                } catch (e: IOException) {
-                    println(e)
-                    Log.e(TAG, "IOException, you might not have internet connection")
-                    return@launchWhenCreated
-                } catch (e: HttpException) {
-                    Log.e(TAG, "HttpException, unexpected response")
-                    return@launchWhenCreated
-                }
-                nextPage = response.nextpage
-                isLoading = false
-                runOnUiThread {
-                    view.findViewById<TextView>(R.id.channel_name).text = response.name
-                    view.findViewById<TextView>(R.id.channel_subs).text = response.subscriberCount.formatShort() + " subscribers"
-                    view.findViewById<TextView>(R.id.video_list_row_description).text = response.description
-                    val bannerImage = view.findViewById<ImageView>(R.id.channel_banner)
-                    val channelImage = view.findViewById<ImageView>(R.id.list_item_video_channel_img)
-                    Picasso.get().load(response.bannerUrl).into(bannerImage)
-                    Picasso.get().load(response.avatarUrl).into(channelImage)
-                    channelAdapter = ChannelAdapter(response.relatedStreams!!.toMutableList())
-                    view.findViewById<RecyclerView>(R.id.channel_recView).adapter = channelAdapter
-                }
-            }
-        }
-        run()
-    }
-    private fun fetchNextPage() {
-        fun run() {
+        lifecycleScope.launchWhenCreated {
+            val response = apiClient.fetchChannel(channelId)
+            val bannerImage = view.findViewById<ImageView>(R.id.channel_banner)
+            val channelImage = view.findViewById<ImageView>(R.id.list_item_video_channel_img)
 
-            lifecycleScope.launchWhenCreated {
-                val response = try {
-                    RetrofitInstance.api.getChannelNextPage(channel_id!!, nextPage!!)
-                } catch (e: IOException) {
-                    println(e)
-                    Log.e(TAG, "IOException, you might not have internet connection")
-                    return@launchWhenCreated
-                } catch (e: HttpException) {
-                    Log.e(TAG, "HttpException, unexpected response," + e.response())
-                    return@launchWhenCreated
-                }
-                nextPage = response.nextpage
-                channelAdapter?.updateItems(response.relatedStreams!!)
-                isLoading = false
-            }
+            nextPage = response?.nextpage
+            isLoading = false
+            channelAdapter = ChannelAdapter(response?.relatedStreams!!.toMutableList())
+
+            view.findViewById<TextView>(R.id.channel_name).text = response.name
+            view.findViewById<TextView>(R.id.channel_subs).text = "${response.subscriberCount.formatShort()} subscribers"
+            view.findViewById<TextView>(R.id.video_list_row_description).text = response.description
+            view.findViewById<RecyclerView>(R.id.channel_recView).adapter = channelAdapter
+
+            Picasso.get().load(response.bannerUrl).into(bannerImage)
+            Picasso.get().load(response.avatarUrl).into(channelImage)
         }
-        run()
     }
-    private fun Fragment?.runOnUiThread(action: () -> Unit) {
-        this ?: return
-        if (!isAdded) return // Fragment not attached to an Activity
-        activity?.runOnUiThread(action)
+
+    private fun fetchNextPage() {
+        lifecycleScope.launchWhenCreated {
+            val response = apiClient.fetchNextPage(channelId, nextPage!!)
+            nextPage = response?.nextpage
+            channelAdapter?.updateItems(response?.relatedStreams!!)
+            isLoading = false
+        }
     }
 
     override fun onDestroyView() {
-        val scrollView = view?.findViewById<ScrollView>(R.id.channel_scrollView)
+        val scrollView = view?.findViewById<NestedScrollView>(channel_scrollView)
         scrollView?.viewTreeObserver?.removeOnScrollChangedListener {
         }
         channelAdapter = null
