@@ -40,7 +40,6 @@
                     android:id="@+id/playerTitleLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toTopOf="@+id/playerDescription"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -86,7 +85,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
+                <com.github.libretube.views.BaseTextView
                     android:id="@+id/playerDescription"
 
                     android:layout_width="0dp"
@@ -302,7 +301,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:background="?attr/colorSurface" />
 
-<!--    <com.github.libretube.CustomExoPlayerView-->
+<!--    <com.github.libretube.views.CustomExoPlayerView-->
     <com.google.android.exoplayer2.ui.StyledPlayerView
         android:id="@+id/player"
         android:layout_width="match_parent"

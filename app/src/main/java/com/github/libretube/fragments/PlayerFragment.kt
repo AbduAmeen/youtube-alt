@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.os.Build
 import android.os.Bundle
-import android.text.Html
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +33,7 @@ import com.github.libretube.formatShort
 import com.github.libretube.network.PipedApiClient
 import com.github.libretube.obj.PipedStream
 import com.github.libretube.obj.Streams
+import com.github.libretube.views.BaseTextView
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.MediaItem.SubtitleConfiguration
@@ -280,7 +279,7 @@ class PlayerFragment : Fragment() {
     private fun initializePlayerElements(response: Streams?) {
         val channelImage = view?.findViewById<ImageView>(R.id.player_channelImage)
         val token = context?.getSharedPreferences("token", Context.MODE_PRIVATE)?.getString("token", "")
-        val playerDescription = view?.findViewById<TextView>(R.id.playerDescription)
+        val playerDescription = view?.findViewById<BaseTextView>(R.id.playerDescription)
         val playerDescriptionArrow = view?.findViewById<ImageView>(R.id.playerDescriptionArrow)
 
         lifecycleScope.launch {
@@ -349,12 +348,9 @@ class PlayerFragment : Fragment() {
             }
         }
         view?.findViewById<TextView>(R.id.playerTitle)?.text = response?.title
-        playerDescription?.text = response?.description?.let {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT)
-            } else {
-                Html.fromHtml(it)
-            }
+
+        response?.description?.let {
+            playerDescription?.setTextFromHtml(it)
         }
 
         view?.findViewById<TextView>(R.id.playerViewsInfo)?.text = "${response?.views?.formatShort()} views • ${response?.uploadDate}"
