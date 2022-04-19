@@ -97,11 +97,10 @@ class PlayerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         hideKeyboard()
 
-        val playerMotionLayout = view.findViewById<MotionLayout>(R.id.playerMotionLayout)
+        motionLayout = view.findViewById<MotionLayout>(R.id.playerMotionLayout)
         val playImageView = view.findViewById<ImageView>(R.id.play_imageView)
 
         mainActivity = activity as MainActivity
-        motionLayout = playerMotionLayout
         exoPlayerView = view.findViewById(R.id.player)
         relDownloadVideo = view.findViewById(R.id.relPlayer_download)
         videoId = videoId?.replace("/watch?v=", "")
@@ -120,7 +119,7 @@ class PlayerFragment : Fragment() {
             initPlayerElements.join()
         }
 
-        playerMotionLayout.addTransitionListener(object : MotionLayout.TransitionListener {
+        motionLayout.addTransitionListener(object : MotionLayout.TransitionListener {
             var eId = 0
             var sId = 0
 
@@ -152,10 +151,10 @@ class PlayerFragment : Fragment() {
             }
         })
 
-        playerMotionLayout.progress = 1.toFloat()
-        playerMotionLayout.transitionToStart()
+        motionLayout.progress = 1.toFloat()
+        motionLayout.transitionToStart()
 
-        view.findViewById<TextView>(R.id.player_description).text = videoId
+        view.findViewById<TextView>(R.id.playerDescription).text = videoId
 
         val transition: (View) -> Unit = {
             motionLayout.transitionToEnd()
@@ -281,6 +280,8 @@ class PlayerFragment : Fragment() {
     private fun initializePlayerElements(response: Streams?) {
         val channelImage = view?.findViewById<ImageView>(R.id.player_channelImage)
         val token = context?.getSharedPreferences("token", Context.MODE_PRIVATE)?.getString("token", "")
+        val playerDescription = view?.findViewById<TextView>(R.id.playerDescription)
+        val playerDescriptionArrow = view?.findViewById<ImageView>(R.id.playerDescriptionArrow)
 
         lifecycleScope.launch {
             relatedRecView.adapter = TrendingAdapter(response?.relatedStreams!!)
@@ -338,8 +339,17 @@ class PlayerFragment : Fragment() {
         }
 
         // init text of page
-        view?.findViewById<TextView>(R.id.player_title)?.text = response?.title
-        view?.findViewById<TextView>(R.id.player_description)?.text = response?.description?.let {
+        view?.findViewById<ConstraintLayout>(R.id.playerTitleLayout)?.setOnClickListener {
+            if (playerDescription?.visibility == View.GONE) {
+                playerDescription.visibility = View.VISIBLE
+                playerDescriptionArrow?.rotation = 180F
+            } else {
+                playerDescription?.visibility = View.GONE
+                playerDescriptionArrow?.rotation = 0F
+            }
+        }
+        view?.findViewById<TextView>(R.id.playerTitle)?.text = response?.title
+        playerDescription?.text = response?.description?.let {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT)
             } else {
@@ -347,7 +357,7 @@ class PlayerFragment : Fragment() {
             }
         }
 
-        view?.findViewById<TextView>(R.id.player_views_info)?.text = "${response?.views?.formatShort()} views • ${response?.uploadDate}"
+        view?.findViewById<TextView>(R.id.playerViewsInfo)?.text = "${response?.views?.formatShort()} views • ${response?.uploadDate}"
         view?.findViewById<TextView>(R.id.textLike)?.text = response?.likes?.formatShort()
         view?.findViewById<TextView>(R.id.player_channelName)?.text = response?.uploader
 
@@ -466,7 +476,7 @@ class PlayerFragment : Fragment() {
 
         for ((i, audio) in audios.withIndex()) {
             val q = audio.quality!!.replace(" kbps", "").toInt()
-            if (q> bitrate) {
+            if (q > bitrate) {
                 bitrate = q
                 index = i
             }

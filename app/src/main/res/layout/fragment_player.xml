@@ -27,54 +27,79 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layoutDirection="ltr"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/player_title_layout"
+                android:id="@+id/playerInfoLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layoutDirection="inherit">
 
-                <TextView
-                    android:id="@+id/player_title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="left"
-                    android:layoutDirection="inherit"
-                    android:padding="8dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:textDirection="ltr"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/player_views_info"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="left"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:textDirection="ltr"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/player_title" />
-
-                <TextView
-                    android:id="@+id/player_description"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/playerTitleLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toTopOf="@+id/playerDescription"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/playerTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:layoutDirection="inherit"
+                        android:padding="8dp"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:textDirection="ltr"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@id/playerDescriptionArrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/playerViewsInfo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:textDirection="ltr"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@id/playerDescriptionArrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/playerTitle" />
+
+                    <ImageView
+                        android:id="@+id/playerDescriptionArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_arrow_down"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/playerDescription"
+
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:gravity="left"
                     android:padding="8dp"
                     android:textDirection="ltr"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/player_views_info" />
+                    app:layout_constraintTop_toBottomOf="@id/playerTitleLayout" />
+                app:layout_constraintTop_toBottomOf="@id/player_title_layout" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
