@@ -36,4 +36,10 @@
     <string name="empty">Username and Password can\'t be empty!</string>
     <string name="notgmail">This is not your gmail account!</string>
     <string name="defres">Default Video Resolution</string>
+    <string name="preference_instance">settings</string>
+    <string name="default_quality">default_quality</string>
+    <string name="default_api_instance">https://pipedapi.kavin.rocks/</string>
+    <string name="playerPosition">PLAYER_POSITION_KEY</string>
+    <string name="playWhenReady">PLAYER_PLAY_WHEN_READY_KEY</string>
+    <string name="default_instance">https://piped.kavin.rocks/</string>
 </resources>

@@ -3,49 +3,72 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav"
-    app:startDestination="@id/home2">
-
+    app:startDestination="@id/homeFragment">
     <fragment
-        android:id="@+id/home2"
-        android:name="com.github.libretube.fragments.HomeFragment"
+        android:id="@+id/libraryFragment"
+        android:name="com.github.libretube.library.LibraryFragment"
+        android:label="fragment_library"
+        tools:layout="@layout/fragment_library" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.github.libretube.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
     <fragment
-        android:id="@+id/subscriptions"
-        android:name="com.github.libretube.fragments.SubscriptionsFragment"
+        android:id="@+id/subscriptionsFragment"
+        android:name="com.github.libretube.subscription.SubscriptionsFragment"
         android:label="fragment_subscriptions"
         tools:layout="@layout/fragment_subscriptions" />
-    <fragment
-        android:id="@+id/library"
-        android:name="com.github.libretube.fragments.LibraryFragment"
-        android:label="fragment_library"
-        tools:layout="@layout/fragment_library" >
-    </fragment>
+    <action
+        android:id="@+id/navigateToSearch"
+        app:destination="@id/searchFragment"
+ />
+    <action
+        android:id="@+id/navigateToChannel"
+        app:destination="@id/channelFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@android:anim/slide_in_left"
+        app:popExitAnim="@android:anim/slide_out_right"
+ />
+    <action
+        android:id="@+id/navigateToLibrary"
+        app:destination="@id/libraryFragment"
+        app:enterAnim="@android:anim/slide_in_left"
+        app:exitAnim="@android:anim/slide_out_right" />
+    <action
+        android:id="@+id/navigateToHome"
+        app:destination="@id/homeFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@android:anim/slide_in_left"
+        app:popExitAnim="@android:anim/slide_out_right"
+ />
+    <action
+        android:id="@+id/navigateToSubscriptions"
+        app:destination="@id/subscriptionsFragment"
+        />
+
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.github.libretube.fragments.SearchFragment"
-        android:label="fragment_search"
-        tools:layout="@layout/fragment_search" />
+        android:name="com.github.libretube.search.SearchFragment"
+        android:label="SearchFragment" />
     <fragment
-        android:id="@+id/channel"
-        android:name="com.github.libretube.fragments.ChannelFragment"
-        android:label="channel"
-        tools:layout="@layout/fragment_channel" >
+        android:id="@+id/channelFragment"
+        android:name="com.github.libretube.channel.ChannelFragment"
+        android:label="ChannelFragment" >
         <argument
-            android:name="channel_id"
+            android:name="id"
             app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/playlistFragment"
-        android:name="com.github.libretube.fragments.PlaylistFragment"
+        android:name="com.github.libretube.playlist.PlaylistFragment"
         android:label="fragment_playlist"
-        tools:layout="@layout/fragment_playlist" >
+        tools:layout="@layout/playlist_fragment" >
         <argument
-            android:name="playlist_id"
+            android:name="id"
             app:argType="string" />
     </fragment>
-    <fragment
-        android:id="@+id/settings"
-        android:name="com.github.libretube.fragments.SettingsFragment"
-        android:label="Settings" />
+    <action android:id="@+id/navigateToPlaylist" app:destination="@id/playlistFragment" />
 </navigation>

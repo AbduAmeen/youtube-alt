@@ -4,8 +4,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     >
-
-
     <ImageView
         android:src="@drawable/ic_libretube_foreground"
         android:layout_width="match_parent"
