@@ -42,6 +42,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    // TODO: Allow for different search filters
     fun search(query: String) {
         _searchTerm.value = query
         _searchLoading.value = true

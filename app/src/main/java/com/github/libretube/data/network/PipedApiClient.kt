@@ -3,8 +3,6 @@ package com.github.libretube.data.network
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.preference.PreferenceManager
-import com.github.libretube.R
 import com.github.libretube.data.network.obj.Channel
 import com.github.libretube.data.network.obj.Instances
 import com.github.libretube.data.network.obj.Login
@@ -17,26 +15,19 @@ import com.github.libretube.data.network.obj.Subscription
 import com.github.libretube.data.network.obj.Token
 import retrofit2.HttpException
 import retrofit2.Retrofit
-import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.IOException
-import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class PipedApiClient @Inject constructor(
-    context: Context
+    context: Context,
+    private val preferences: SharedPreferences,
+    retrofit: Retrofit
 ) : ApiClient {
 
     private val TAG: String = "PipedApiClient"
-    private val preferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private val url = preferences.getString("instance", context.getString(R.string.default_api_instance))!!
-    private val apiClient: PipedApiDefinition = with(Retrofit.Builder()) {
-        baseUrl(url)
-
-        addConverterFactory(JacksonConverterFactory.create())
-        build().create(PipedApiDefinition::class.java)
-    }
+    private val apiClient = retrofit.create(PipedApiDefinition::class.java)
 
     override suspend fun fetchTrending(): List<StreamItem>? {
         return try {

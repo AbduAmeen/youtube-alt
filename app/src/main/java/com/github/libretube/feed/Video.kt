@@ -10,7 +10,7 @@ class Video() : FeedItem() {
         item.let {
             url = it.url!!
             title = it.title
-            duration = it.duration?.let { duration -> DateUtils.formatElapsedTime(duration).replace("^0+(?!$)", "") }
+            duration = DateUtils.formatElapsedTime(it.duration ?: -1)?.replace("^0+(?!$)", "")
             uploadDate = it.uploadedDate
             thumbnailUrl = it.thumbnail
             views = it.views?.formatShort()

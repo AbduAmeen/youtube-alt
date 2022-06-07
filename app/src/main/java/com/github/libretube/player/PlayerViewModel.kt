@@ -10,7 +10,6 @@ import com.github.libretube.feed.Video
 import com.github.libretube.util.formatShort
 import com.google.android.exoplayer2.ExoPlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -64,7 +63,7 @@ class PlayerViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val videoId = videoUrl.value!!.replace("/watch?v=", "")
-            val streams = getVideoStreamsAsync(videoId).await() ?: return@launch
+            val streams = apiClient.fetchStreams(videoId) ?: return@launch
 
             _streamUrl.value = streams.dash ?: streams.hls!!
 
@@ -80,10 +79,6 @@ class PlayerViewModel @Inject constructor(
             _relatedVideos.value = streams.relatedStreams!!.map { Video(it) }
             _likes.value = streams.likes!!.formatShort()
         }
-    }
-
-    private fun getVideoStreamsAsync(videoId: String) = viewModelScope.async {
-        return@async apiClient.fetchStreams(videoId)
     }
 
     fun pause() {
