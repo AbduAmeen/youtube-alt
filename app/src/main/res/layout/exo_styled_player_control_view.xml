@@ -62,6 +62,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:padding="@dimen/exo_icon_padding"
+        android:text="Auto"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -76,7 +77,9 @@
         android:background="#00FFFFFF"
         android:padding="@dimen/exo_icon_padding"
         android:src="@drawable/ic_arrow_down2"
+        app:layout_constraintBottom_toBottomOf="@id/quality_text"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/quality_text"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_conversion_absoluteHeight="28dp"
         tools:layout_conversion_absoluteWidth="28dp" />

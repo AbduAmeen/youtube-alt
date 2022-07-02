@@ -9,16 +9,21 @@ import android.view.LayoutInflater
 import android.view.OrientationEventListener
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageButton
+import android.widget.ListPopupWindow
+import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.libretube.R
+import com.github.libretube.data.types.VideoQuality
 import com.github.libretube.databinding.PlayerFragmentBinding
 import com.github.libretube.feed.FeedAdapter
 import com.github.libretube.home.HomeFragment
@@ -33,7 +38,6 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.IllegalArgumentException
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -214,8 +218,45 @@ class PlayerFragment : Fragment() {
             }
             override fun onTransitionTrigger(motionLayout: MotionLayout?, triggerId: Int, positive: Boolean, progress: Float) {}
         })
+
+        initQualitySelect()
         // Hide the navbar when fragment opens
         mainActivity.binding.mainMotionLayout.transitionToEnd()
+    }
+
+    private fun initQualitySelect() {
+        val qualitySelector = binding.player.findViewById<ImageButton>(R.id.quality_select)
+        val qualityText = binding.player.findViewById<TextView>(R.id.quality_text)
+        val popupMenu = ListPopupWindow(context!!, null, R.attr.listPopupWindowStyle)
+
+        val qualityClick = View.OnClickListener {
+            val listOfQualities = mutableListOf<String>()
+            exoPlayer!!.currentTracks.groups.forEach {
+                for (i in 0 until it.length) {
+                    val quality = VideoQuality.getFromHeight(it.getTrackFormat(i).height)?.toString()
+
+                    if (quality != null && !listOfQualities.contains(quality)) {
+                        listOfQualities.add(quality)
+                    }
+                }
+            }
+            val adapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, listOfQualities)
+
+            popupMenu.setOnItemClickListener { parent: AdapterView<*>?, view: View?, position: Int, id: Long ->
+                // Respond to list popup window item click.
+                qualityText.text = listOfQualities[position]
+                // Dismiss popup.
+                popupMenu.dismiss()
+            }
+
+            popupMenu.run {
+                anchorView = qualityText
+                setAdapter(adapter)
+                show()
+            }
+        }
+        qualitySelector.setOnClickListener(qualityClick)
+        qualityText.setOnClickListener(qualityClick)
     }
 
     private fun changeLayoutOrientation(orientation: Int) {
